@@ -1,6 +1,6 @@
 #property copyright                             "Copyright 2023, Shin Eun Gu"
 #property link                                  "https://www.buymeacoffee.com/ss2299"
-#property version                               "2.3"
+#property version                               "2.4"
 #property indicator_chart_window                "Engulfing Candle detector"
 #property description                           "Click the link to buy some coffee for us"
 #property description                           "Your help would be making this indicator better"
@@ -20,6 +20,7 @@ enum ENUM_ENGULFING {
 //--- input parameters
 input    string             inGroupName1      = "-- Double canedles --";                // Detect Patterns
 input    ENUM_ENGULFING     inEnalbeEngulfing = ENGULFING_BODY;                         // Enable Engulfing
+input    double             inTolerance       = 0.03;                                   // Tollerance for Open Price
 input    string             inBlank1          = "";                                     // .
 
 input    string             inGroupName2      = "-- Single candle --";                  // Filtering Condition
@@ -60,8 +61,12 @@ input    double             inGuideBoxPrice2  = 0.618;                          
 
 // Last candle candle time
 datetime LastActionTime = 0;
+bool     init;
 
 int OnInit()  {
+
+   displayEngulfing();
+   LastActionTime = iTime(NULL, 0, 1);
 
    EventSetTimer(1);
    
@@ -293,7 +298,7 @@ int isEngulfing(int pos)
 
    // Bullish
    if ((bullish_pos && bearish_pre) || (bullish_pos && even_pre))  {
-      if(iOpen(_Symbol,PERIOD_CURRENT,pos) <= iClose(_Symbol,PERIOD_CURRENT,pos+1) && iClose(_Symbol,PERIOD_CURRENT,pos) >= iOpen(_Symbol,PERIOD_CURRENT,pos+1))
+      if(iOpen(_Symbol,PERIOD_CURRENT,pos) - inTolerance <= iClose(_Symbol,PERIOD_CURRENT,pos+1) && iClose(_Symbol,PERIOD_CURRENT,pos) >= iOpen(_Symbol,PERIOD_CURRENT,pos+1))
       {
          result = 1;
       }
@@ -301,7 +306,7 @@ int isEngulfing(int pos)
 
    // Bearish
    if ((bearish_pos && bullish_pre) || (bearish_pos && even_pre))  {
-      if(iOpen(_Symbol,PERIOD_CURRENT,pos) >= iClose(_Symbol,PERIOD_CURRENT,pos+1) && iClose(_Symbol,PERIOD_CURRENT,pos) <= iOpen(_Symbol,PERIOD_CURRENT,pos+1))  {
+      if(iOpen(_Symbol,PERIOD_CURRENT,pos) + inTolerance >= iClose(_Symbol,PERIOD_CURRENT,pos+1) && iClose(_Symbol,PERIOD_CURRENT,pos) <= iOpen(_Symbol,PERIOD_CURRENT,pos+1))  {
          result = 2;
       }
    }
