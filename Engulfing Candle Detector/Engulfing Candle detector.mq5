@@ -1,6 +1,6 @@
 #property copyright                             "Copyright 2023, Shin Eun Gu"
 #property link                                  "https://www.buymeacoffee.com/ss2299"
-#property version                               "2.4"
+#property version                               "2.5"
 #property indicator_chart_window                "Engulfing Candle detector"
 #property description                           "Click the link to buy some coffee for us"
 #property description                           "Your help would be making this indicator better"
@@ -51,6 +51,7 @@ input    ENUM_LINE_STYLE    inBox161LineStyle = STYLE_DOT;                      
 input    int                inGuideBoxPeriod  = 30;                                     // Period of the guide box
 input    double             inGuideBoxPrice1  = 0.50;                                   // Guide price 1 from the engulfing candle
 input    double             inGuideBoxPrice2  = 0.618;                                  // Guide price 2 from the engulfing candle
+input    bool               inNotification    = false;                                  // Alert and Notification
 
 // Prefix for drawing objects
 #define  PrefixBox          "EngulfingBox_"
@@ -110,6 +111,7 @@ void OnTimer()  {
 void displayEngulfing()  {
 
    string str;
+   string alert_msg;
    double price1, price2;
    
    int resEngulfing;
@@ -124,6 +126,7 @@ void displayEngulfing()  {
       resEngulfingShadow = isEngulfingShadow(i);
       resMarobozu = isMarubozu(i);
       
+         
       // Engulfing with Body
       if (inEnalbeEngulfing == 1 && !inEnableMarubozu)  {
          if (resEngulfing > 0) {
@@ -153,6 +156,14 @@ void displayEngulfing()  {
                price1 = calcGuideprice(iOpen(_Symbol,PERIOD_CURRENT,i), iClose(_Symbol,PERIOD_CURRENT,i), 0);
                price2 = calcGuideprice(iOpen(_Symbol,PERIOD_CURRENT,i), iClose(_Symbol,PERIOD_CURRENT,i), 1.618);
                createBox161(str, resEngulfing, i, price1, price2);
+            }
+            
+            // Alert and Notification
+            if (i==1 && inNotification) {
+               if (resEngulfing == 1) { alert_msg = ChartSymbol(0) + ", " + GetPeriodName(ChartPeriod(0)) + ", Bullish Engulfing"; }
+               else if (resEngulfing == 2) { alert_msg = ChartSymbol(0) + ", " + GetPeriodName(ChartPeriod(0)) + ", Bearish Engulfing"; }
+               Alert(alert_msg);
+               SendNotification(alert_msg);
             }
          }
       }
@@ -184,6 +195,14 @@ void displayEngulfing()  {
                price1 = calcGuideprice(iOpen(_Symbol,PERIOD_CURRENT,i), iClose(_Symbol,PERIOD_CURRENT,i), 0);
                price2 = calcGuideprice(iOpen(_Symbol,PERIOD_CURRENT,i), iClose(_Symbol,PERIOD_CURRENT,i), 1.618);
                createBox161(str, resEngulfing, i, price1, price2);
+            }
+            
+            // Alert and Notification
+            if (i==1 && inNotification) {
+               if (resEngulfing == 1) { alert_msg = ChartSymbol(0) + ", " + GetPeriodName(ChartPeriod(0)) + ", Bullish Engulfing"; }
+               else if (resEngulfing == 2) { alert_msg = ChartSymbol(0) + ", " + GetPeriodName(ChartPeriod(0)) + ", Bearish Engulfing"; }
+               Alert(alert_msg);
+               SendNotification(alert_msg);
             }
          }
       }
@@ -229,6 +248,14 @@ void displayEngulfing()  {
                price2 = calcGuideprice(iHigh(_Symbol,PERIOD_CURRENT,i), iLow(_Symbol,PERIOD_CURRENT,i), 1.618);
                createBox161(str, resEngulfingShadow, i, price1, price2);
             }
+            
+            // Alert and Notification
+            if (i==1 && inNotification) {
+               if (resEngulfingShadow == 1) { alert_msg = ChartSymbol(0) + ", " + GetPeriodName(ChartPeriod(0)) + ", Bullish Engulfing"; }
+               else if (resEngulfingShadow == 2) { alert_msg = ChartSymbol(0) + ", " + GetPeriodName(ChartPeriod(0)) + ", Bearish Engulfing"; }
+               Alert(alert_msg);
+               SendNotification(alert_msg);
+            }
          }
       }
       else if (inEnalbeEngulfing == 2 && inEnableMarubozu)  {
@@ -270,6 +297,14 @@ void displayEngulfing()  {
                price1 = calcGuideprice(iHigh(_Symbol,PERIOD_CURRENT,i), iLow(_Symbol,PERIOD_CURRENT,i), 0);
                price2 = calcGuideprice(iHigh(_Symbol,PERIOD_CURRENT,i), iLow(_Symbol,PERIOD_CURRENT,i), 1.618);
                createBox161(str, resEngulfingShadow, i, price1, price2);
+            }
+            
+            // Alert and Notification
+            if (i==1 && inNotification) {
+               if (resEngulfingShadow == 1) { alert_msg = ChartSymbol(0) + ", " + GetPeriodName(ChartPeriod(0)) + ", Bullish Engulfing"; }
+               else if (resEngulfingShadow == 2) { alert_msg = ChartSymbol(0) + ", " + GetPeriodName(ChartPeriod(0)) + ", Bearish Engulfing"; }
+               Alert(alert_msg);
+               SendNotification(alert_msg);
             }
          }
       }
@@ -494,4 +529,37 @@ void clearScreen()
    ObjectsDeleteAll(ChartID(), PrefixBox161);
 }
 
+
+
+string GetPeriodName(ENUM_TIMEFRAMES period) 
+  { 
+   if(period==PERIOD_CURRENT) period=Period(); 
+//--- 
+   switch(period) 
+     { 
+      case PERIOD_M1:  return("M1"); 
+      case PERIOD_M2:  return("M2"); 
+      case PERIOD_M3:  return("M3"); 
+      case PERIOD_M4:  return("M4"); 
+      case PERIOD_M5:  return("M5"); 
+      case PERIOD_M6:  return("M6"); 
+      case PERIOD_M10: return("M10"); 
+      case PERIOD_M12: return("M12"); 
+      case PERIOD_M15: return("M15"); 
+      case PERIOD_M20: return("M20"); 
+      case PERIOD_M30: return("M30"); 
+      case PERIOD_H1:  return("H1"); 
+      case PERIOD_H2:  return("H2"); 
+      case PERIOD_H3:  return("H3"); 
+      case PERIOD_H4:  return("H4"); 
+      case PERIOD_H6:  return("H6"); 
+      case PERIOD_H8:  return("H8"); 
+      case PERIOD_H12: return("H12"); 
+      case PERIOD_D1:  return("Daily"); 
+      case PERIOD_W1:  return("Weekly"); 
+      case PERIOD_MN1: return("Monthly"); 
+     } 
+//--- 
+   return("unknown period"); 
+  }
 
